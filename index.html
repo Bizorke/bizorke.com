@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<script src="./scripts/jquery.js" ></script>
+<script src="./scripts/dothtml.js" ></script>
+<script src="./scripts/dotcss.js" ></script>
+<script src="./scripts/Sequencr.js"></script>
+<script src="./scripts/videoplayer.js"></script>
+<script src="https://apis.google.com/js/platform.js"></script>
+
+<link rel="stylesheet" type="text/css" href="./styles/style.css">
+
+<body></body>
+
+<script>
+
+var liveStreamActive = false;
+
+dot("body")
+.div(
+	dot
+	.div(
+		dot.a(
+			dot/*.t("Join me on ")*/.img().src("./images/discord.png").height(40)
+		).target("_blank").href("https://discord.gg/QStHZE3").style(dotcss.height(40).lineHeight(40).fontSize(32).color("white"))
+		//< div class= "g-ytsubscribe" data - channel="Bizorke" data - layout="full" data - theme="dark" data - count="hidden" ></div >
+		.div().class("g-ytsubscribe").data("channel", "Bizorke").data("layout", "full").data("theme", "dark").data("count", "hidden")
+	).style(dotcss.widthP(100).paddingLeft(10))
+	.if(liveStreamActive, function(){
+		//<iframe width="640" height="360" src="https://www.youtube.com/embed/CI_fLsKNSUE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+		//<iframe width="560" height="315" src="https://www.youtube.com/embed/WEFyKTrc8i8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+		return dot.iframe().width(1024).height(512).src("https://www.youtube.com/embed/CI_fLsKNSUE").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
+		//.iframe().width(1024).height(512).src("https://gaming.youtube.com/user/Bizorke/live").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
+	})
+	.else(function(){
+
+	})
+
+	.div()
+	.style(
+		dotcss
+			.backgroundImage("./images/banner.png")
+			.backgroundSize("cover")
+			.widthP(100)
+			.height(256)
+	)
+	.h1("Featured Videos")
+	.videolist([
+		"WEFyKTrc8i8",
+		"12dzoavXWTM",
+		"4HuiKpeNLIo",
+		"1P_xR6Anv2o",
+		"S6j3abw6OLA",
+		"5AJsnpsefA8",
+		"53S1hQ1t7HM",
+		"Dzn74aVUqcc",
+		"d7GCEwA108E",
+		"rZukUAG0sWU",
+		"mXkta4kLsPc",
+		"rXpaBXqhWjc",
+		"WY7y758Tjfs",
+		"vzma6Kz1ZWA",
+		"AiINBf_SKzs",
+		"kOPx20H3V1A",
+		"U3wnCnLW-Ww",
+		"kLl3vYBHJkg",
+		"LCjg0RxbVuE",
+		"MXVKTGmOl8o",
+		"Snqx9HRNxgA",
+		"kpo3KTiKdEs",
+		"Fe_i8qqM3hc",
+		"mj2sq3Vj1tc",
+		"9zu52w7jqy0",
+		"VgH7VFLocbk",
+		"lDaAH--BA3I",
+		"jv3NWK6PGyM",
+		"X1rCGBOaxY4",
+		"UI0p0859XRQ",
+		"bL9dOB23S5Q",
+		"Fw8idsD_koI",
+		"lgj3hHR9JV8",
+		"zn0s4f9Y5z0",
+		"J6f6_0ujcHQ",
+		"uKvt7Pf9hq8",
+		"Qggalai-6M4",
+		"geDmHn4cZa8",
+		"G260aMw4A9o"
+		],5)
+
+
+
+
+
+
+
+	//BOTTOM
+	.div()
+	.style(
+		dotcss
+			.backgroundImage("./images/pixeljs.png")
+			.backgroundSize("cover")
+			.widthP(100)
+			.height(576)
+	)
+).style(
+	dotcss.display("inline-block")
+	.width(1024)
+	.backgroundColor("black")
+)
+
+</script>
+</html>
