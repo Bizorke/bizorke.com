@@ -27,6 +27,8 @@ var ytW = 1024;
 var discH = 512;
 var ytH = 512;
 var chatVidPadding = 32;
+var titanFrameUrl = "https://titanembeds.com/embed/430042808540463104?theme=MetroEdge&userscalable=false&defaultchannel=430084654570405908";
+var streamControlsLocked = false;
 
 function resizeLiveStream(anim){
 	var usableWinWidth = window.innerWidth - chatVidPadding * 2;
@@ -39,27 +41,27 @@ function resizeLiveStream(anim){
 	var containerHeight = cascade && liveChatActive ? (yh + dh) : (yh);
 	var L = expandedLive ? ((usableWinWidth - ytW) / 2) : (cascade || !liveChatActive ? (0) : (discW / 2));
 	if (anim) {
-		dotcss("#youtube-frame").width.animate(yw);
-		dotcss("#youtube-frame").height.animate(yh);
-		dotcss("#youtube-frame").right.animate(-L);
+		dotcss(youtubeFrame).width.animate(yw);
+		dotcss(youtubeFrame).height.animate(yh);
+		dotcss(youtubeFrame).right.animate(-L);
 		dotcss("#livestream-container").height.animate(containerHeight);
-		dotcss("#titan-frame").top.animate(cascade ? yh : 0);
-		dotcss("#titan-frame").left.animate(cascade ? 0 : -L);
-		dotcss("#titan-frame").width.animate(dw);
-		dotcss("#titan-frame").height.animate(dh);
+		dotcss(titanFrame).top.animate(cascade && liveChatActive ? yh : 0);
+		dotcss(titanFrame).left.animate(cascade || !liveChatActive ? 0 : -L);
+		dotcss(titanFrame).height.animate(dh);
+		dotcss(titanFrame).width.animate(dw);
 	}
 	else {
-		dotcss("#youtube-frame").width(yw);
-		dotcss("#youtube-frame").height(yh);
-		dotcss("#youtube-frame").right(-L);
+		dotcss(youtubeFrame).width(yw);
+		dotcss(youtubeFrame).height(yh);
+		dotcss(youtubeFrame).right(-L);
 		dotcss("#livestream-container").height(containerHeight);
-		dotcss("#titan-frame").top(cascade ? yh : 0);
-		dotcss("#titan-frame").width(dw);
-		dotcss("#titan-frame").left(cascade ? 0 : -L);
-		dotcss("#titan-frame").height(dh);
+		dotcss(titanFrame).top(cascade && liveChatActive ? yh : 0);
+		dotcss(titanFrame).width(dw);
+		dotcss(titanFrame).left(cascade || !liveChatActive ? 0 : -L);
+		dotcss(titanFrame).height(dh);
 	}
-	if(liveChatActive) $("#titan-frame").fadeIn();
-	else $("#titan-frame").fadeOut();
+	//if(liveChatActive) $(titanFrame).fadeIn();
+	//else $(titanFrame).fadeOut();
 	if (screenTooSmallForChat || !liveChatActive) $("#cascade-chat-btn").hide();
 	else $("#cascade-chat-btn").show();
 }
@@ -80,9 +82,9 @@ dot("body")
 		//<iframe width="560" height="315" src="https://www.youtube.com/embed/WEFyKTrc8i8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 		return dot.div(
 			dot
-			.iframe().id("titan-frame").src("https://titanembeds.com/embed/430042808540463104?theme=MetroEdge&userscalable=false&defaultchannel=430084654570405908").height(512).width(discW).frameborder(0)
+			.iframe().id("titan-frame").src(liveChatActive ? titanFrameUrl : "").height(512).width(discW).frameborder(0)
 			.style(
-				dotcss.display("none")
+				dotcss.display(liveChatActive ? "block" : "none")
 				.left(0)
 				.height(discH)
 				.width(discW)
@@ -111,10 +113,12 @@ dot("body")
 				.marginRight(30)
 		)
 		.onclick(function (e) {
+			if(!streamControlsLocked) streamControlsLocked = true;
 			expandedLive = !expandedLive;
 			e.target.innerHTML = expandedLive ? "Smaller" : "Bigger";
 			localStorage.setItem("expandedLive", expandedLive);
 			resizeLiveStream(true);
+			setTimeout(function () { streamControlsLocked = false; }, 450);
 		})
 		.button(liveChatActive ? "Hide Live Chat" : "Show Live Chat").id("live-chat-btn").style(
 			dotcss.fontSize(24)
@@ -125,10 +129,16 @@ dot("body")
 				.marginLeft(30)
 		)
 		.onclick(function (e) {
+			if (!streamControlsLocked) streamControlsLocked = true;
 			liveChatActive = !liveChatActive;
 			localStorage.setItem("liveChatActive", liveChatActive);
 			e.target.innerHTML = liveChatActive ? "Hide Live Chat" : "Show Live Chat";
 			resizeLiveStream(true);
+			if(liveChatActive) titanFrame.src = titanFrameUrl;
+			setTimeout(function () { 
+				streamControlsLocked = false; 
+				if (!liveChatActive) titanFrame.src = "";
+			}, 450);
 		})
 		.button(cascadeSetting ? "Tile Chat" : "Cascade Chat").id("cascade-chat-btn").style(
 			dotcss.fontSize(24)
@@ -139,10 +149,12 @@ dot("body")
 				.marginLeft(30)
 		)
 		.onclick(function (e) {
+			if (!streamControlsLocked) streamControlsLocked = true;
 			cascadeSetting = !cascadeSetting;
 			localStorage.setItem("cascadeSetting", cascadeSetting);
 			e.target.innerHTML = cascadeSetting ? "Tile Chat" : "Cascade Chat";
 			resizeLiveStream(true);
+			setTimeout(function(){streamControlsLocked = false;}, 450);
 		})
 		.br().br()
 	})
@@ -210,7 +222,10 @@ dot("body")
 			.widthP(100)
 			.height(576)
 	)
-).class("contentstrip")
+).class("contentstrip");
+
+var titanFrame = document.getElementById("titan-frame");
+var youtubeFrame = document.getElementById("youtube-frame");
 
 window.onresize = function(){
 	resizeLiveStream();
