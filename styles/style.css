@@ -14,3 +14,14 @@ body{
 	background-attachment: fixed;
 	background-size:cover;
 }
+
+.contentstrip{
+	display: inline-block;
+	width: 1024px;
+	background-color: black;
+}
+
+h1{
+	padding-left: 10px;
+	margin-bottom: 10px;
+}

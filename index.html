@@ -19,8 +19,64 @@
 <script>
 
 var liveStreamActive = true;
+var liveChatActive = localStorage.getItem("liveChatActive") == "true";
+var expandedLive = localStorage.getItem("expandedLive") == "true";
+var discW = 420;
+var ytW = 1024;
+var chatVidPadding = 64;
+
+function resizeLiveStream(anim){
+	if(liveChatActive){
+		var tw = discW + ytW + chatVidPadding * 2;
+		if(tw > window.innerWidth){
+			//Chat has to go below video.
+			var L = expandedLive ? 0 : 0;
+			if (anim) {
+				dotcss("#youtube-frame").width.animate(1024);
+				dotcss("#youtube-frame").right.animate(0);
+				dotcss("#titan-frame").left.animate(-discW / 2);
+				dotcss("#titan-frame").width.animate(1024);
+			}
+			else {
+				dotcss("#youtube-frame").width(1024);
+				dotcss("#youtube-frame").right(0);
+				dotcss("#titan-frame").left(-discW / 2);
+				dotcss("#titan-frame").width(1024);
+			}
+		}
+		else{
+			//Put chat to the left of video.
+			//var titW = window.innerWidth - 1024;
+			if(false/*expandedLive*/){
+				var maxYtW = window.innerWidth - discW;
+
+			}
+			else{
+				if(anim){
+					dotcss("#youtube-frame").width.animate(1024);
+					dotcss("#youtube-frame").right.animate(-discW / 2);
+					dotcss("#titan-frame").left.animate(-discW / 2);
+					dotcss("#titan-frame").width.animate(420);
+				}
+				else{
+					dotcss("#youtube-frame").width(1024);
+					dotcss("#youtube-frame").right(-discW / 2);
+					dotcss("#titan-frame").left(-discW / 2);
+					dotcss("#titan-frame").width(420);
+				}
+			}
+			$("#titan-frame").fadeIn();
+		}
+	}
+	else{
+		if(anim) dotcss("#youtube-frame").right.animate(0);
+		else dotcss("#youtube-frame").right(0);
+		$("#titan-frame").fadeOut();
+	}
+}
 
 dot("body")
+.div().style(dotcss.position("fixed"))
 .div(
 	dot
 	.div(
@@ -33,17 +89,57 @@ dot("body")
 	.if(liveStreamActive, function(){
 		//<iframe width="640" height="360" src="https://www.youtube.com/embed/CI_fLsKNSUE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 		//<iframe width="560" height="315" src="https://www.youtube.com/embed/WEFyKTrc8i8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-		return dot.iframe().width(1024).height(512).src("https://www.youtube.com/embed/live_stream?channel=UC2MaVSauTtocUW9IxCkIiwA").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
+		return dot.div(
+			dot.iframe(
+				dot.div().style(dotcss.backgroundImage("./images/banner.png").backgroundSize("cover").widthP(100).height(256))
+			).id("youtube-frame").width(ytW).height(512).src("https://www.youtube.com/embed/live_stream?channel=UC2MaVSauTtocUW9IxCkIiwA&autoplay=1").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
+			.style(
+				dotcss.position("absolute")
+				.right(0)
+			)
+			.iframe().id("titan-frame").src("https://titanembeds.com/embed/430042808540463104?theme=MetroEdge&userscalable=false&defaultchannel=439779283708280833").height(512).width(discW).frameborder(0)
+			.style(
+				dotcss.display("none")
+				.left(0)
+				.position("absolute")
+			)
+		).id("livestream-container").style(
+			dotcss.height(512)
+			.position("relative")
+		)
+		.br()
+		.button(expandedLive ? "Smaller" : "Bigger").id("live-chat-btn").style(
+			dotcss.fontSize(24)
+				.backgroundColor(200, 200, 210)
+				.cursor("pointer")
+				.float("left")
+				.color("black")
+				.marginLeft(30)
+		)
+		.onclick(function (e) {
+			expandedLive = !expandedLive;
+			e.target.innerHTML = expandedLive ? "Smaller" : "Bigger";
+			localStorage.setItem("expandedLive", expandedLive);
+			resizeLiveStream(true);
+		})
+		.button(liveChatActive ? "Hide Live Chat" : "Show Live Chat").id("live-chat-btn").style(
+			dotcss.fontSize(24)
+				.backgroundColor(200, 200, 210)
+				.cursor("pointer")
+				.float("right")
+				.color("black")
+				.marginRight(30)
+		)
+		.onclick(function (e) {
+			liveChatActive = !liveChatActive;
+			localStorage.setItem("liveChatActive", liveChatActive);
+			e.target.innerHTML = liveChatActive ? "Hide Live Chat" : "Show Live Chat";
+			resizeLiveStream(true);
+		})
+		.br().br()
 	})
 	.else(function(){
-		dot.div()
-		.style(
-			dotcss
-				.backgroundImage("./images/banner.png")
-				.backgroundSize("cover")
-				.widthP(100)
-				.height(256)
-		)
+		dot.div().style(dotcss.backgroundImage("./images/banner.png").backgroundSize("cover").widthP(100).height(256))
 	})
 	//.iframe().width(1024).height(512).src("https://gaming.youtube.com/user/Bizorke/live").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
 
@@ -106,11 +202,12 @@ dot("body")
 			.widthP(100)
 			.height(576)
 	)
-).style(
-	dotcss.display("inline-block")
-	.width(1024)
-	.backgroundColor("black")
-)
+).class("contentstrip")
+
+window.onresize = function(){
+	resizeLiveStream();
+}
+window.onresize();
 
 </script>
 </html>
