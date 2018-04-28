@@ -29,11 +29,11 @@ dot("body")
 		).target("_blank").href("https://discord.gg/QStHZE3").style(dotcss.height(40).lineHeight(40).fontSize(32).color("white"))
 		//< div class= "g-ytsubscribe" data - channel="Bizorke" data - layout="full" data - theme="dark" data - count="hidden" ></div >
 		.div().class("g-ytsubscribe").data("channel", "Bizorke").data("layout", "full").data("theme", "dark").data("count", "hidden")
-	).style(dotcss.widthP(100).paddingLeft(10))
+	).style(dotcss.widthP(100))
 	.if(liveStreamActive, function(){
 		//<iframe width="640" height="360" src="https://www.youtube.com/embed/CI_fLsKNSUE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 		//<iframe width="560" height="315" src="https://www.youtube.com/embed/WEFyKTrc8i8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-		return dot.iframe().width(1024).height(512).src("https://www.youtube.com/embed/CI_fLsKNSUE").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
+		return dot.iframe().width(1024).height(512).src("https://www.youtube.com/embed/live_stream?channel=UC2MaVSauTtocUW9IxCkIiwA").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
 	})
 	.else(function(){
 		dot.div()
