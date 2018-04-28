@@ -9,7 +9,7 @@
 <script src="./scripts/dothtml.js" ></script>
 <script src="./scripts/dotcss.js" ></script>
 <script src="./scripts/Sequencr.js"></script>
-<script src="./scripts/videoplayer.js"></script>
+<script src="./scripts/videoplayer.js?v=2"></script>
 <script src="https://apis.google.com/js/platform.js"></script>
 
 <link rel="stylesheet" type="text/css" href="./styles/style.css">
@@ -21,58 +21,47 @@
 var liveStreamActive = true;
 var liveChatActive = localStorage.getItem("liveChatActive") == "true";
 var expandedLive = localStorage.getItem("expandedLive") == "true";
+var cascadeSetting = localStorage.getItem("cascadeSetting") == "true";
 var discW = 420;
 var ytW = 1024;
-var chatVidPadding = 64;
+var discH = 512;
+var ytH = 512;
+var chatVidPadding = 32;
 
 function resizeLiveStream(anim){
-	if(liveChatActive){
-		var tw = discW + ytW + chatVidPadding * 2;
-		if(tw > window.innerWidth){
-			//Chat has to go below video.
-			var L = expandedLive ? 0 : 0;
-			if (anim) {
-				dotcss("#youtube-frame").width.animate(1024);
-				dotcss("#youtube-frame").right.animate(0);
-				dotcss("#titan-frame").left.animate(-discW / 2);
-				dotcss("#titan-frame").width.animate(1024);
-			}
-			else {
-				dotcss("#youtube-frame").width(1024);
-				dotcss("#youtube-frame").right(0);
-				dotcss("#titan-frame").left(-discW / 2);
-				dotcss("#titan-frame").width(1024);
-			}
-		}
-		else{
-			//Put chat to the left of video.
-			//var titW = window.innerWidth - 1024;
-			if(false/*expandedLive*/){
-				var maxYtW = window.innerWidth - discW;
-
-			}
-			else{
-				if(anim){
-					dotcss("#youtube-frame").width.animate(1024);
-					dotcss("#youtube-frame").right.animate(-discW / 2);
-					dotcss("#titan-frame").left.animate(-discW / 2);
-					dotcss("#titan-frame").width.animate(420);
-				}
-				else{
-					dotcss("#youtube-frame").width(1024);
-					dotcss("#youtube-frame").right(-discW / 2);
-					dotcss("#titan-frame").left(-discW / 2);
-					dotcss("#titan-frame").width(420);
-				}
-			}
-			$("#titan-frame").fadeIn();
-		}
+	var usableWinWidth = window.innerWidth - chatVidPadding * 2;
+	var screenTooSmallForChat = ytW + discW > usableWinWidth;
+	var cascade = screenTooSmallForChat || cascadeSetting;
+	var dw = cascade ? ytW : discW;
+	var yw = expandedLive ? (cascade || !liveChatActive ? (usableWinWidth) : (usableWinWidth - discW)) : (ytW); //Checks out.
+	var yh = Math.round(yw * (ytH / ytW));
+	var dh = expandedLive && !cascade ? yh : (cascade ? discH * 0.75 : discH);
+	var containerHeight = cascade && liveChatActive ? (yh + dh) : (yh);
+	var L = expandedLive ? ((usableWinWidth - ytW) / 2) : (cascade || !liveChatActive ? (0) : (discW / 2));
+	if (anim) {
+		dotcss("#youtube-frame").width.animate(yw);
+		dotcss("#youtube-frame").height.animate(yh);
+		dotcss("#youtube-frame").right.animate(-L);
+		dotcss("#livestream-container").height.animate(containerHeight);
+		dotcss("#titan-frame").top.animate(cascade ? yh : 0);
+		dotcss("#titan-frame").left.animate(cascade ? 0 : -L);
+		dotcss("#titan-frame").width.animate(dw);
+		dotcss("#titan-frame").height.animate(dh);
 	}
-	else{
-		if(anim) dotcss("#youtube-frame").right.animate(0);
-		else dotcss("#youtube-frame").right(0);
-		$("#titan-frame").fadeOut();
+	else {
+		dotcss("#youtube-frame").width(yw);
+		dotcss("#youtube-frame").height(yh);
+		dotcss("#youtube-frame").right(-L);
+		dotcss("#livestream-container").height(containerHeight);
+		dotcss("#titan-frame").top(cascade ? yh : 0);
+		dotcss("#titan-frame").width(dw);
+		dotcss("#titan-frame").left(cascade ? 0 : -L);
+		dotcss("#titan-frame").height(dh);
 	}
+	if(liveChatActive) $("#titan-frame").fadeIn();
+	else $("#titan-frame").fadeOut();
+	if (screenTooSmallForChat || !liveChatActive) $("#cascade-chat-btn").hide();
+	else $("#cascade-chat-btn").show();
 }
 
 dot("body")
@@ -90,18 +79,23 @@ dot("body")
 		//<iframe width="640" height="360" src="https://www.youtube.com/embed/CI_fLsKNSUE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 		//<iframe width="560" height="315" src="https://www.youtube.com/embed/WEFyKTrc8i8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 		return dot.div(
-			dot.iframe(
+			dot
+			.iframe().id("titan-frame").src("https://titanembeds.com/embed/430042808540463104?theme=MetroEdge&userscalable=false&defaultchannel=430084654570405908").height(512).width(discW).frameborder(0)
+			.style(
+				dotcss.display("none")
+				.left(0)
+				.height(discH)
+				.width(discW)
+				.position("absolute")
+			)
+			.iframe(
 				dot.div().style(dotcss.backgroundImage("./images/banner.png").backgroundSize("cover").widthP(100).height(256))
 			).id("youtube-frame").width(ytW).height(512).src("https://www.youtube.com/embed/live_stream?channel=UC2MaVSauTtocUW9IxCkIiwA&autoplay=1").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
 			.style(
 				dotcss.position("absolute")
 				.right(0)
-			)
-			.iframe().id("titan-frame").src("https://titanembeds.com/embed/430042808540463104?theme=MetroEdge&userscalable=false&defaultchannel=439779283708280833").height(512).width(discW).frameborder(0)
-			.style(
-				dotcss.display("none")
-				.left(0)
-				.position("absolute")
+				.height(ytH)
+				.width(ytW)
 			)
 		).id("livestream-container").style(
 			dotcss.height(512)
@@ -112,9 +106,9 @@ dot("body")
 			dotcss.fontSize(24)
 				.backgroundColor(200, 200, 210)
 				.cursor("pointer")
-				.float("left")
+				.float("right")
 				.color("black")
-				.marginLeft(30)
+				.marginRight(30)
 		)
 		.onclick(function (e) {
 			expandedLive = !expandedLive;
@@ -126,14 +120,28 @@ dot("body")
 			dotcss.fontSize(24)
 				.backgroundColor(200, 200, 210)
 				.cursor("pointer")
-				.float("right")
+				.float("left")
 				.color("black")
-				.marginRight(30)
+				.marginLeft(30)
 		)
 		.onclick(function (e) {
 			liveChatActive = !liveChatActive;
 			localStorage.setItem("liveChatActive", liveChatActive);
 			e.target.innerHTML = liveChatActive ? "Hide Live Chat" : "Show Live Chat";
+			resizeLiveStream(true);
+		})
+		.button(cascadeSetting ? "Tile Chat" : "Cascade Chat").id("cascade-chat-btn").style(
+			dotcss.fontSize(24)
+				.backgroundColor(200, 200, 210)
+				.cursor("pointer")
+				.float("left")
+				.color("black")
+				.marginLeft(30)
+		)
+		.onclick(function (e) {
+			cascadeSetting = !cascadeSetting;
+			localStorage.setItem("cascadeSetting", cascadeSetting);
+			e.target.innerHTML = cascadeSetting ? "Tile Chat" : "Cascade Chat";
 			resizeLiveStream(true);
 		})
 		.br().br()

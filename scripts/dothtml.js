@@ -623,6 +623,7 @@ _DOT.prototype.createJQueryEventHandler = function(name){
 		"onscroll",
 		"onselect",
 		"onsubmit",
+		"ontouchstart",
 		"onunload",
 		"open",
 		"optimum",
