@@ -18,7 +18,7 @@
 
 <script>
 
-var liveStreamActive = false;
+var liveStreamActive = true;
 
 dot("body")
 .div(
@@ -38,7 +38,7 @@ dot("body")
 	.else(function(){
 
 	})
-	.iframe().width(1024).height(512).src("https://gaming.youtube.com/user/Bizorke/live").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
+	//.iframe().width(1024).height(512).src("https://gaming.youtube.com/user/Bizorke/live").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
 
 	.div()
 	.style(
