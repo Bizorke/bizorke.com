@@ -4,6 +4,8 @@
 	var currentVidIndex = 0;
 	var currentVidArray = [];
 	var overlayon = false;
+	/*var touchStarted = false;
+	var touchMoved = false;*/
 	function playVideo(array, index){
 		var player = $("#video-player")[0];
 		if(!player) {console.log("Video player hasn't loaded yet."); return;} //didn't load yet?
@@ -20,7 +22,7 @@
 	function stopVideo(){
 		//console.log("closing");
 		currentVidArray = 0;
-		dotcss("#absolute-video-player-container").fadeOut(function(){
+		$("#absolute-video-player-container").fadeOut(function(){
 			$("#video-player")[0].src = "";
 		});
 		overlayon = false;
@@ -48,7 +50,7 @@
 					return dot.div(
 						function(){
 							var ret = dot.img().src("https://img.youtube.com/vi/" + element + "/0.jpg").style(dotcss.widthP(100).cursor("pointer"))
-							$(ret.getLast()).on("click touchstart", function(){
+							$(ret.getLast()).on("click", function(){
 								playVideo(videoIds, videoIds.indexOf(element));
 							});
 							return ret;
