@@ -124,6 +124,7 @@ dot("body")
 		)
 		.onclick(function (e) {
 			if(!streamControlsLocked) streamControlsLocked = true;
+			else return;
 			expandedLive = !expandedLive;
 			e.target.innerHTML = expandedLive ? "Smaller" : "Bigger";
 			localStorage.setItem("expandedLive", expandedLive);
@@ -140,6 +141,7 @@ dot("body")
 		)
 		.onclick(function (e) {
 			if (!streamControlsLocked) streamControlsLocked = true;
+			else return;
 			liveChatActive = !liveChatActive;
 			localStorage.setItem("liveChatActive", liveChatActive);
 			e.target.innerHTML = liveChatActive ? "Hide Live Chat" : "Show Live Chat";
@@ -160,6 +162,7 @@ dot("body")
 		)
 		.onclick(function (e) {
 			if (!streamControlsLocked) streamControlsLocked = true;
+			else return;
 			cascadeSetting = !cascadeSetting;
 			localStorage.setItem("cascadeSetting", cascadeSetting);
 			e.target.innerHTML = cascadeSetting ? "Tile Chat" : "Cascade Chat";
