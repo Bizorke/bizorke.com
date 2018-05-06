@@ -77,6 +77,15 @@ function resizeLiveStream(anim){
 	else $("#bigger-btn").show();
 }
 
+dot.createWidget("bizorkeapp", function () {
+	return dot.div().style(dotcss)
+});
+dot.createWidget("bizorkeappcarousel", function (modules) {
+	var randomizedModules = [];
+	while(modules.length > 0) randomizedModules.push(modules.splice(Math.floor(Math.random() * modules.length), 1)[0]);
+	return dot.div(randomizedModules).style(dotcss.widthP(100).height(600));
+});
+
 dot("body")
 .div().style(dotcss.position("fixed"))
 .div(
@@ -179,8 +188,15 @@ dot("body")
 	//.iframe().width(1024).height(512).src("https://gaming.youtube.com/user/Bizorke/live").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
 	.adunit()
 
+	/*.h1("My Apps")
+	.bizorkeappcarousel([
+		dot.bizorkeapp("./images/appimages/ksp-mission-planner.png"),
+		dot.bizorkeapp("./images/appimages/opencomputers-botania.jpg")
+	])*/
+
 	.h1("Featured Videos")
 	.videolist([
+		"GerCKFRhoJo",
 		"Fb9HVMkB9Go",
 		"WEFyKTrc8i8",
 		"12dzoavXWTM",
