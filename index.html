@@ -77,13 +77,87 @@ function resizeLiveStream(anim){
 	else $("#bigger-btn").show();
 }
 
-dot.createWidget("bizorkeapp", function () {
-	return dot.div().style(dotcss)
+dot.createWidget("bizorkeapp", function (title, bg, url) {
+	return dot.div(
+		dot.div().style(
+			dotcss
+			.position("absolute")
+			.backgroundImage(bg)
+			.backgroundSize("cover")
+			.backgroundPosition("50% 50%")
+			.opacity(0.5)
+			.top(0).bottom(0).left(0).right(0)
+		)
+		.div(title)
+		.style(
+			dotcss.position("absolute")
+			.left(0)
+			.top(20)
+			.fontSize(55)
+			.lineHeight(70)
+			.height(70)
+			.widthP(100)
+			.color("white")
+			.background("linear-gradient(to right, green, rgba(150,255,150, 0));")
+			.textShadow("0px 1px 1px #4d4d4d")
+			.paddingLeft(20)
+		)
+	).style(
+		dotcss
+		.position("absolute")
+		.top(0).left(0).right(0).bottom(0)
+		.display("none")
+		.cursor("pointer")
+		.overflow("hidden")
+	).onclick(function(){
+		window.open(url);
+	});
 });
 dot.createWidget("bizorkeappcarousel", function (modules) {
 	var randomizedModules = [];
+	var currentModule = 0;
+	var carouselChanging = false;
 	while(modules.length > 0) randomizedModules.push(modules.splice(Math.floor(Math.random() * modules.length), 1)[0]);
-	return dot.div(randomizedModules).style(dotcss.widthP(100).height(600));
+	return dot.div(
+		dot.div(randomizedModules).id("bizorkecarousel").style(dotcss.widthP(100).heightP(100).overflow("hidden"))
+		.div(
+			dot.iterate(randomizedModules.length, function(m){
+				return dot.span("•").style(dotcss.cursor("pointer").color(m == currentModule ? "white" : "gray").userSelect("none")).onclick(function(e){
+					if(m != currentModule && !carouselChanging){
+						var bizC = document.getElementById("bizorkecarousel");
+						var toClose = currentModule;
+						carouselChanging = true;
+						for(var i = 0; i < e.target.parentNode.children.length; i++){
+							dotcss(e.target.parentNode.children[i]).color("gray")
+						}
+						dotcss(e.target).color("white");
+						if(m > toClose){
+							$(bizC.children[m]).fadeIn(400, function(){
+								$(bizC.children[toClose]).hide();
+							});
+						}
+						else{
+							$(bizC.children[m]).show();
+							$(bizC.children[toClose]).fadeOut(400);
+						}
+						dotcss(bizC.children[m].children[0]).left(-100);
+						dotcss(bizC.children[m].children[0]).right(-100);
+						dotcss(bizC.children[m].children[0]).bottom(-100);
+						dotcss(bizC.children[m].children[0]).top(-100);
+						dotcss(bizC.children[m].children[0]).left.animate(0, 2000);
+						dotcss(bizC.children[m].children[0]).right.animate(0, 2000);
+						dotcss(bizC.children[m].children[0]).bottom.animate(0, 2000);
+						dotcss(bizC.children[m].children[0]).top.animate(0, 2000);
+						dotcss(bizC.children[m].children[1]).left(1024);
+						dotcss(bizC.children[m].children[1]).left.animate(0, 500, function(){
+							carouselChanging = false;
+						});
+						currentModule = m;
+					}
+				})
+			})
+		).style(dotcss.position("absolute").bottom(0).left(0).right(0).height(60).fontSize(60).textAlign("center").backgroundColor(0,0,0,0.5))
+	).style(dotcss.position("relative").widthP(100).height(400))
 });
 
 dot("body")
@@ -188,11 +262,15 @@ dot("body")
 	//.iframe().width(1024).height(512).src("https://gaming.youtube.com/user/Bizorke/live").frameborder(0).attr("allow", "autoplay; encrypted-media").attr("allowfullscreen", "allowfullscreen")
 	.adunit()
 
-	/*.h1("My Apps")
+	.h1("Featured Apps & Downloads")
 	.bizorkeappcarousel([
-		dot.bizorkeapp("./images/appimages/ksp-mission-planner.png"),
-		dot.bizorkeapp("./images/appimages/opencomputers-botania.jpg")
-	])*/
+		dot.bizorkeapp("Advanced KSP Mission Calculator", "./images/appimages/ksp-mission-planner.png", "http://bizorke.com/AdvancedKspMissionCalculator/"),
+		dot.bizorkeapp("OpenComputers Botania Rune Maker", "./images/appimages/opencomputers-botania.jpg", "https://github.com/Bizorke/opencomputers-botania-runemaker"),
+		dot.bizorkeapp("KSP Robotic Horse", "./images/appimages/ksprobotichorse.jpg", "https://github.com/Bizorke/ksp-robotic-horse"),
+		dot.bizorkeapp("Random Build Challenge", "./images/appimages/randombuildchallenge.png", "http://random.gats.rocks"),
+		dot.bizorkeapp("Gats.io Community Patch", "./images/appimages/gatscommunitypatch.png", "http://gats.rocks"),
+		dot.bizorkeapp("Phase Shift Career Editor", "./images/appimages/phaseshiftcareereditor.png", "https://github.com/Bizorke/PhaseShiftCareerEditor")
+	])
 
 	.h1("Featured Videos")
 	.videolist([
@@ -255,6 +333,8 @@ dot("body")
 			.height(576)
 	)
 ).class("contentstrip");
+
+$(document.getElementById("bizorkecarousel").children[0]).show();
 
 var titanFrame = document.getElementById("titan-frame");
 var youtubeFrame = document.getElementById("youtube-frame");
