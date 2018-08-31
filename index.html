@@ -117,12 +117,15 @@ dot.createWidget("bizorkeappcarousel", function (modules) {
 	var randomizedModules = [];
 	var currentModule = 0;
 	var carouselChanging = false;
-	while(modules.length > 0) randomizedModules.push(modules.splice(Math.floor(Math.random() * modules.length), 1)[0]);
+	
+	randomizedModules = modules;
+	//while(modules.length > 0) randomizedModules.push(modules.splice(Math.floor(Math.random() * modules.length), 1)[0]);
+	
 	return dot.div(
 		dot.div(randomizedModules).id("bizorkecarousel").style(dotcss.widthP(100).heightP(100).overflow("hidden"))
 		.div(
 			dot.iterate(randomizedModules.length, function(m){
-				return dot.span("•").style(dotcss.cursor("pointer").color(m == currentModule ? "white" : "gray").userSelect("none")).onclick(function(e){
+				return dot.span("\u2022").style(dotcss.cursor("pointer").color(m == currentModule ? "white" : "gray").userSelect("none")).onclick(function(e){
 					if(m != currentModule && !carouselChanging){
 						var bizC = document.getElementById("bizorkecarousel");
 						var toClose = currentModule;
@@ -264,6 +267,7 @@ dot("body")
 
 	.h1("Featured Apps & Downloads")
 	.bizorkeappcarousel([
+		dot.bizorkeapp("Saucers.Space", "./images/appimages/saucers-space.png", "https://saucers.space/"),
 		dot.bizorkeapp("Advanced KSP Mission Calculator", "./images/appimages/ksp-mission-planner.png", "http://bizorke.com/AdvancedKspMissionCalculator/"),
 		dot.bizorkeapp("OpenComputers Botania Rune Maker", "./images/appimages/opencomputers-botania.jpg", "https://github.com/Bizorke/opencomputers-botania-runemaker"),
 		dot.bizorkeapp("KSP Robotic Horse", "./images/appimages/ksprobotichorse.jpg", "https://github.com/Bizorke/ksp-robotic-horse"),
@@ -274,6 +278,18 @@ dot("body")
 
 	.h1("Featured Videos")
 	.videolist([
+		"VEvpVmn9_GE",
+		"dswc5Bfsapw",
+		"Usd0VY7yUQI",
+		"AW2u29lxKHk",
+		"IIH57ZVpkuk",
+		
+		"a9EgceyaJG4",
+		"P8eMgh89RBY",
+		"5_hX2PWtylI",
+		"4T75xvUJLS0",
+		"IUtUc5Ci_UY",
+
 		"Hp_0Kg5hABo",
 		"MuLQcqBT2FA",
 		"GerCKFRhoJo",
