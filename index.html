@@ -77,9 +77,59 @@ function resizeLiveStream(anim){
 	else $("#bigger-btn").show();
 }
 
-dot.createWidget("bizorkeapp", function (title, bg, url) {
+var carouselChanging = false;
+var currentModule = 0;
+var hashList = [];
+var moduleNames = [];
+var carouselModulesByHash = {};
+function changeCarousel(m){
+	if(m != currentModule && !carouselChanging){
+		window.location.hash = "#" + hashList[m];
+		carouselChanging = true;
+		var bizC = document.getElementById("bizorkecarousel");
+		var toClose = currentModule;
+		var bullets = document.getElementById("carouselappbullets");
+		var list = document.getElementById("carousel-app-list");
+		for(var i = 0; i < bullets.children.length; i++){
+			dotcss(bullets.children[i]).color("gray")
+			dotcss(list.children[i]).backgroundColor(100,100,100,0.2)
+			dotcss(list.children[i]).color("black")
+		}
+		dotcss(bullets.children[m]).color("white");
+		dotcss(list.children[m]).backgroundColor(255,255,255,0.2);
+		dotcss(list.children[m]).color("lightblue");
+		if(m > toClose){
+			$(bizC.children[m]).fadeIn(400, function(){
+				$(bizC.children[toClose]).hide();
+			});
+		}
+		else{
+			$(bizC.children[m]).show();
+			$(bizC.children[toClose]).fadeOut(400);
+		}
+		dotcss(bizC.children[m].children[1]).left(-100);
+		dotcss(bizC.children[m].children[1]).right(-100);
+		dotcss(bizC.children[m].children[1]).bottom(-100);
+		dotcss(bizC.children[m].children[1]).top(-100);
+		dotcss(bizC.children[m].children[1]).left.animate(0, 2000);
+		dotcss(bizC.children[m].children[1]).right.animate(0, 2000);
+		dotcss(bizC.children[m].children[1]).bottom.animate(0, 2000);
+		dotcss(bizC.children[m].children[1]).top.animate(0, 2000);
+		dotcss(bizC.children[m].children[2]).left(1024);
+		dotcss(bizC.children[m].children[2]).left.animate(0, 500, function(){
+			carouselChanging = false;
+		});
+		currentModule = m;
+	}
+}
+
+dot.createWidget("bizorkeapp", function (title, hash, bg, url) {
+	carouselModulesByHash[hash] = hashList.length;
+	hashList.push(hash);
+	moduleNames.push(title);
 	return dot.div(
-		dot.div().style(
+		dot.a().name(hash)
+		.div().style(
 			dotcss
 			.position("absolute")
 			.backgroundImage(bg)
@@ -102,7 +152,7 @@ dot.createWidget("bizorkeapp", function (title, bg, url) {
 			.textShadow("0px 1px 1px #4d4d4d")
 			.paddingLeft(20)
 		)
-	).style(
+	).id("carousel-item-" + hash).style(
 		dotcss
 		.position("absolute")
 		.top(0).left(0).right(0).bottom(0)
@@ -115,8 +165,6 @@ dot.createWidget("bizorkeapp", function (title, bg, url) {
 });
 dot.createWidget("bizorkeappcarousel", function (modules) {
 	var randomizedModules = [];
-	var currentModule = 0;
-	var carouselChanging = false;
 	
 	randomizedModules = modules;
 	//while(modules.length > 0) randomizedModules.push(modules.splice(Math.floor(Math.random() * modules.length), 1)[0]);
@@ -125,41 +173,30 @@ dot.createWidget("bizorkeappcarousel", function (modules) {
 		dot.div(randomizedModules).id("bizorkecarousel").style(dotcss.widthP(100).heightP(100).overflow("hidden"))
 		.div(
 			dot.iterate(randomizedModules.length, function(m){
-				return dot.span("\u2022").style(dotcss.cursor("pointer").color(m == currentModule ? "white" : "gray").userSelect("none")).onclick(function(e){
-					if(m != currentModule && !carouselChanging){
-						var bizC = document.getElementById("bizorkecarousel");
-						var toClose = currentModule;
-						carouselChanging = true;
-						for(var i = 0; i < e.target.parentNode.children.length; i++){
-							dotcss(e.target.parentNode.children[i]).color("gray")
-						}
-						dotcss(e.target).color("white");
-						if(m > toClose){
-							$(bizC.children[m]).fadeIn(400, function(){
-								$(bizC.children[toClose]).hide();
-							});
-						}
-						else{
-							$(bizC.children[m]).show();
-							$(bizC.children[toClose]).fadeOut(400);
-						}
-						dotcss(bizC.children[m].children[0]).left(-100);
-						dotcss(bizC.children[m].children[0]).right(-100);
-						dotcss(bizC.children[m].children[0]).bottom(-100);
-						dotcss(bizC.children[m].children[0]).top(-100);
-						dotcss(bizC.children[m].children[0]).left.animate(0, 2000);
-						dotcss(bizC.children[m].children[0]).right.animate(0, 2000);
-						dotcss(bizC.children[m].children[0]).bottom.animate(0, 2000);
-						dotcss(bizC.children[m].children[0]).top.animate(0, 2000);
-						dotcss(bizC.children[m].children[1]).left(1024);
-						dotcss(bizC.children[m].children[1]).left.animate(0, 500, function(){
-							carouselChanging = false;
-						});
-						currentModule = m;
-					}
-				})
+				return dot.span("\u2022").style(dotcss.cursor("pointer").color(m == currentModule ? "white" : "gray").userSelect("none")).onclick(function(e){changeCarousel(m);})
 			})
-		).style(dotcss.position("absolute").bottom(0).left(0).right(0).height(60).fontSize(60).textAlign("center").backgroundColor(0,0,0,0.5))
+		).id("carouselappbullets").style(dotcss.position("absolute").bottom(0).left(0).right(0).height(60).fontSize(60).textAlign("center").backgroundColor(0,0,0,0.5))
+		.div(
+			dot.iterate(randomizedModules.length, function(m){
+				return dot.div(moduleNames[m])
+					.style(
+						dotcss.cursor("pointer")
+						.backgroundColor(m == currentModule ? "rgba(255,255,255,0.2)" : "rgba(100,100,100,0.2)")
+						.color(m == currentModule ? "lightblue" : "black")
+						.paddingLeft(5)
+						.paddingTop(4)
+						.paddingBottom(4)
+						.userSelect("none")
+						.whiteSpace("nowrap")
+						.overflow("hidden")
+						.textOverflow("ellipsis")
+						.fontSize(12)
+						.fontWeight("bold")
+						.widthP(100)
+					)
+					.onclick(function(e){changeCarousel(m);})
+			})
+		).style(dotcss.position("absolute").top(0).bottom(60).right(0).width(150).overflowY("scroll").overflowX("hidden").backgroundColor(100,100,100,0.3)).id("carousel-app-list")
 	).style(dotcss.position("relative").widthP(100).height(400))
 });
 
@@ -267,14 +304,14 @@ dot("body")
 
 	.h1("Featured Apps & Downloads")
 	.bizorkeappcarousel([
-		dot.bizorkeapp("Saucers.Space", "./images/appimages/saucers-space.png", "https://saucers.space/"),
-		dot.bizorkeapp("Bizorke's Adventure", "./images/appimages/bizorkesadventure.png", "/downloads/bizorkesadventure.zip"),
-		dot.bizorkeapp("Advanced KSP Mission Calculator", "./images/appimages/ksp-mission-planner.png", "http://bizorke.com/AdvancedKspMissionCalculator/"),
-		dot.bizorkeapp("OpenComputers Botania Rune Maker", "./images/appimages/opencomputers-botania.jpg", "https://github.com/Bizorke/opencomputers-botania-runemaker"),
-		dot.bizorkeapp("KSP Robotic Horse", "./images/appimages/ksprobotichorse.jpg", "https://github.com/Bizorke/ksp-robotic-horse"),
-		dot.bizorkeapp("Random Build Challenge", "./images/appimages/randombuildchallenge.png", "http://random.gats.rocks"),
-		dot.bizorkeapp("Gats.io Community Patch", "./images/appimages/gatscommunitypatch.png", "http://gats.rocks"),
-		dot.bizorkeapp("Phase Shift Career Editor", "./images/appimages/phaseshiftcareereditor.png", "https://github.com/Bizorke/PhaseShiftCareerEditor")
+		dot.bizorkeapp("Saucers.Space", "saucersspace", "./images/appimages/saucers-space.png", "https://saucers.space/"),
+		dot.bizorkeapp("Bizorke's Adventure", "bizorkesadventure", "./images/appimages/bizorkesadventure.png", "/downloads/bizorkesadventure.zip"),
+		dot.bizorkeapp("Advanced KSP Mission Calculator", "kspmissioncalculator", "./images/appimages/ksp-mission-planner.png", "http://bizorke.com/AdvancedKspMissionCalculator/"),
+		dot.bizorkeapp("OpenComputers Botania Rune Maker", "botaniarunemaker", "./images/appimages/opencomputers-botania.jpg", "https://github.com/Bizorke/opencomputers-botania-runemaker"),
+		dot.bizorkeapp("KSP Robotic Horse", "robotichorse", "./images/appimages/ksprobotichorse.jpg", "https://github.com/Bizorke/ksp-robotic-horse"),
+		dot.bizorkeapp("Random Build Challenge", "gatsrandombuildchallenge", "./images/appimages/randombuildchallenge.png", "http://random.gats.rocks"),
+		dot.bizorkeapp("Gats.io Community Patch", "gatscommunitypatch", "./images/appimages/gatscommunitypatch.png", "http://gats.rocks"),
+		dot.bizorkeapp("Phase Shift Career Editor", "phaseshiftcareereditor", "./images/appimages/phaseshiftcareereditor.png", "https://github.com/Bizorke/PhaseShiftCareerEditor")
 	])
 
 	.h1("Featured Videos")
@@ -362,6 +399,11 @@ window.onresize = function(){
 	resizeLiveStream();
 }
 window.onresize();
+
+var hash = window.location.hash.substr(1);
+if(hash && (carouselModulesByHash[hash] || carouselModulesByHash[hash] == 0)){
+	changeCarousel(carouselModulesByHash[hash]);
+}
 
 </script>
 <script>
