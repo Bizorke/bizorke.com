@@ -1,16 +1,20 @@
 //v2: mobile friendly version
 (function(){
-
+	var windowHash = window.location.hash.substr(1);
 	var currentVidIndex = 0;
 	var currentVidArray = [];
 	var overlayon = false;
 	var bodyOverflowY = null;
 	var bodyOverflowX = null;
 	var bodyOverflow = null;
+	var startVideo = null;
+	var allVids = [];
 	/*var touchStarted = false;
 	var touchMoved = false;*/
 	function playVideo(array, index){
+		window.location.hash = array[index];
 		var player = $("#video-player")[0];
+		console.log(index);
 		if(!player) {console.log("Video player hasn't loaded yet."); return;} //didn't load yet?
 		currentVidArray = array;
 		currentVidIndex = index;
@@ -30,6 +34,7 @@
 		overlayon = true;
 	}
 	function stopVideo(){
+		window.location.hash = "1";
 		//console.log("closing");
 		currentVidArray = 0;
 		$("#absolute-video-player-container").fadeOut(function () {
@@ -77,6 +82,7 @@
 	}
 
 	dot.createWidget("videolist", function(videoIds, numbPerRow){
+		allVids = videoIds;
 		numbPerRow = numbPerRow || 3;
 		var vidGrid = [];
 		var vidRow = [];
@@ -95,10 +101,11 @@
 				dot.each(row, function(element){
 					return dot.div(
 						function(){
-							var ret = dot.img().src("https://img.youtube.com/vi/" + element + "/0.jpg").style(dotcss.widthP(100).cursor("pointer"))
+							var ret = dot.a().name(element).img().src("https://img.youtube.com/vi/" + element + "/0.jpg").style(dotcss.widthP(100).cursor("pointer"))
 							$(ret.getLast()).on("click", function(){
 								playVideo(videoIds, videoIds.indexOf(element));
 							});
+							if(windowHash == element) startVideo = element;
 							return ret;
 						}
 					).class("video-thumbnail").style(dotcss.widthP(100 / numbPerRow).display("inline-block"));
@@ -152,6 +159,7 @@
 			.zIndex(1)
 		);
 		resizePlayer();
+		if(startVideo) playVideo(allVids, allVids.indexOf(startVideo));
 	});
 	$(window).resize(resizePlayer);
 })();

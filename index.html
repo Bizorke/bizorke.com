@@ -11,7 +11,7 @@
 <script src="./scripts/dothtml.js" ></script>
 <script src="./scripts/dotcss.js" ></script>
 <script src="./scripts/Sequencr.js"></script>
-<script src="./scripts/videoplayer.js?v=4"></script>
+<script src="./scripts/videoplayer.js?v=5"></script>
 <script src="https://apis.google.com/js/platform.js"></script>
 
 <link rel="stylesheet" type="text/css" href="./styles/style.css?v=2">
@@ -79,7 +79,7 @@ function resizeLiveStream(anim){
 
 var carouselChanging = false;
 var currentModule = 0;
-var hashList = [];
+var hashList = []; var descriptionList = [];
 var moduleNames = [];
 var carouselModulesByHash = {};
 function changeCarousel(m){
@@ -123,8 +123,9 @@ function changeCarousel(m){
 	}
 }
 
-dot.createWidget("bizorkeapp", function (title, hash, bg, url) {
+dot.createWidget("bizorkeapp", function (title, description, hash, bg, url) {
 	carouselModulesByHash[hash] = hashList.length;
+	descriptionList.push(description);
 	hashList.push(hash);
 	moduleNames.push(title);
 	return dot.div(
@@ -150,6 +151,19 @@ dot.createWidget("bizorkeapp", function (title, hash, bg, url) {
 			.color("white")
 			.background("linear-gradient(to right, green, rgba(150,255,150, 0));")
 			.textShadow("0px 1px 1px #4d4d4d")
+			.paddingLeft(20)
+		)
+		.div(description)
+		.style(
+			dotcss.position("absolute")
+			.left(0)
+			.top(92)
+			.fontSize(24)
+			.lineHeight(30)
+			.height(30)
+			.widthP(100)
+			.color("#AAA")
+			.backgroundColor(0,0,0,0.3)
 			.paddingLeft(20)
 		)
 	).id("carousel-item-" + hash).style(
@@ -304,14 +318,14 @@ dot("body")
 
 	.h1("Featured Apps & Downloads")
 	.bizorkeappcarousel([
-		dot.bizorkeapp("Saucers.Space", "saucersspace", "./images/appimages/saucers-space.png", "https://saucers.space/"),
-		dot.bizorkeapp("Bizorke's Adventure", "bizorkesadventure", "./images/appimages/bizorkesadventure.png", "/downloads/bizorkesadventure.zip"),
-		dot.bizorkeapp("Advanced KSP Mission Calculator", "kspmissioncalculator", "./images/appimages/ksp-mission-planner.png", "http://bizorke.com/AdvancedKspMissionCalculator/"),
-		dot.bizorkeapp("OpenComputers Botania Rune Maker", "botaniarunemaker", "./images/appimages/opencomputers-botania.jpg", "https://github.com/Bizorke/opencomputers-botania-runemaker"),
-		dot.bizorkeapp("KSP Robotic Horse", "robotichorse", "./images/appimages/ksprobotichorse.jpg", "https://github.com/Bizorke/ksp-robotic-horse"),
-		dot.bizorkeapp("Random Build Challenge", "gatsrandombuildchallenge", "./images/appimages/randombuildchallenge.png", "http://random.gats.rocks"),
-		dot.bizorkeapp("Gats.io Community Patch", "gatscommunitypatch", "./images/appimages/gatscommunitypatch.png", "http://gats.rocks"),
-		dot.bizorkeapp("Phase Shift Career Editor", "phaseshiftcareereditor", "./images/appimages/phaseshiftcareereditor.png", "https://github.com/Bizorke/PhaseShiftCareerEditor")
+		dot.bizorkeapp("Saucers.Space", "#1 free-to-play space shooter on the web.", "saucersspace", "./images/appimages/saucers-space.png", "https://saucers.space/"),
+		dot.bizorkeapp("Bizorke's Adventure", "A challenging Minecraft puzzle map made for Minecraft 1.13.", "bizorkesadventure", "./images/appimages/bizorkesadventure.png", "/downloads/bizorkesadventure.zip"),
+		dot.bizorkeapp("Gats.io Community Patch", "Tons of enhancements for Gats.io.", "gatscommunitypatch", "./images/appimages/gatscommunitypatch.png", "http://gats.rocks"),
+		dot.bizorkeapp("Random Build Challenge", "Try a random build!", "gatsrandombuildchallenge", "./images/appimages/randombuildchallenge.png", "http://random.gats.rocks"),
+		dot.bizorkeapp("OpenComputers Botania Rune Maker", "Automate rune production using Open Computers", "ocbotaniarunemaker", "./images/appimages/opencomputers-botania.jpg", "https://github.com/Bizorke/opencomputers-botania-runemaker"),
+		dot.bizorkeapp("Advanced KSP Mission Calculator", "Plan your trip into orbit and beyond.", "kspmissioncalculator", "./images/appimages/ksp-mission-planner.png", "http://bizorke.com/AdvancedKspMissionCalculator/"),
+		dot.bizorkeapp("KSP Robotic Horse", "Giddyup!", "ksprobotichorse", "./images/appimages/ksprobotichorse.jpg", "https://github.com/Bizorke/ksp-robotic-horse"),
+		dot.bizorkeapp("Phase Shift Career Editor", "Finally, a less tedious way to organize your careers.", "phaseshiftcareereditor", "./images/appimages/phaseshiftcareereditor.png", "https://github.com/Bizorke/PhaseShiftCareerEditor")
 	])
 
 	.h1("Featured Videos")
